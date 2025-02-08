@@ -1,0 +1,60 @@
+/* src/styles.css */
+.app-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.order-books {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.order-book {
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 300px;
+  background-color: #f9f9f9;
+}
+
+.order-book h3 {
+  text-align: center;
+}
+
+.order-book-tables {
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-side {
+  width: 45%;
+}
+
+.order-side table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-side th, .order-side td {
+  padding: 4px;
+  text-align: right;
+  border-bottom: 1px solid #ddd;
+}
+.sell-side th,
+.sell-side td,
+.sell-title {
+  color: red;
+  text-align: center;
+}
+
+.buy-side th,
+.buy-side td,
+.buy-title {
+  color: green;
+  text-align: center;
+}
+
+.chart-section {
+  margin-top: 40px;
+  text-align: center;
+}
