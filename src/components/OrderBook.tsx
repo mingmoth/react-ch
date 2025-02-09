@@ -1,6 +1,3 @@
-// src/components/OrderBook.tsx
-import React from 'react';
-
 interface OrderBookData {
   asks: [number, number][];
   bids: [number, number][];
@@ -11,7 +8,31 @@ interface OrderBookProps {
   data: OrderBookData;
 }
 
-const OrderBook: React.FC<OrderBookProps> = ({ instrument, data }) => {
+// 五檔報價
+const orderSize = 5;
+
+/**
+ * 根據傳入的資料陣列渲染表格列，
+ * 若資料不存在或為空則回傳 orderSize 筆預設的 placeholder 列
+ */
+const renderRows = (rows?: [number, number][]) => {
+  if (rows && rows.length > 0) {
+    return rows.map((row, idx) => (
+      <tr key={idx}>
+        <td>{row[0]}</td>
+        <td>{row[1]}</td>
+      </tr>
+    ));
+  }
+  return Array.from({ length: orderSize }, (_, idx) => (
+    <tr key={idx}>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+  ));
+};
+
+export default function OrderBook ({ instrument, data }: OrderBookProps) {
   return (
     <div className="order-book">
       <h3>{instrument}</h3>
@@ -25,14 +46,7 @@ const OrderBook: React.FC<OrderBookProps> = ({ instrument, data }) => {
                 <th>數量</th>
               </tr>
             </thead>
-            <tbody>
-              {data?.asks && data.asks.map((ask, idx) => (
-                <tr key={idx}>
-                  <td>{ask[0]}</td>
-                  <td>{ask[1]}</td>
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{renderRows(data?.asks)}</tbody>
           </table>
         </div>
         <div className="order-side buy-side">
@@ -44,19 +58,10 @@ const OrderBook: React.FC<OrderBookProps> = ({ instrument, data }) => {
                 <th>數量</th>
               </tr>
             </thead>
-            <tbody>
-              {data?.bids && data.bids.map((bid, idx) => (
-                <tr key={idx}>
-                  <td>{bid[0]}</td>
-                  <td>{bid[1]}</td>
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{renderRows(data?.bids)}</tbody>
           </table>
         </div>
       </div>
     </div>
   );
 };
-
-export default OrderBook;
