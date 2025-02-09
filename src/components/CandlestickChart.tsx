@@ -112,7 +112,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
     }
     prevLatestPriceRef.current = latestPrice;
 
-    // 劃一條水平線 (全寬)，位置根據即時價格，線條顏色依 realTimeColor 變化
+    // 劃一條水平線 (全寬)，位置根據即時價格
     g.append("line")
       .attr("class", "realtime-line")
       .attr("x1", 0)
@@ -124,14 +124,14 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
       .attr("stroke-dasharray", "4,2");
 
     // 定義即時更新價格 tooltip 的尺寸
-    const tooltipWidth = 80, tooltipHeight = 30;
+    const tooltipWidth = 50, tooltipHeight = 20;
     // 計算 tooltip 垂直位置 (若超出圖表上下邊界則調整)
     let rtTooltipY = priceY - tooltipHeight / 2;
     rtTooltipY = Math.max(0, Math.min(rtTooltipY, innerHeight - tooltipHeight));
-    // 將即時價格 tooltip放在右側 (與 y 軸靠近)
+    // 將即時價格 tooltip 放在與 Y 軸同側 (即內部右邊界)
     const rtPriceGroup = g.append("g")
       .attr("class", "realtime-price")
-      .attr("transform", `translate(${innerWidth - tooltipWidth}, ${rtTooltipY})`);
+      .attr("transform", `translate(${innerWidth}, ${rtTooltipY})`);
     rtPriceGroup.append("rect")
       .attr("width", tooltipWidth)
       .attr("height", tooltipHeight)
@@ -142,9 +142,10 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
       .attr("x", tooltipWidth / 2)
       .attr("y", tooltipHeight / 2)
       .attr("dy", ".35em")
+      .style("font-size", "12px")
       .attr("text-anchor", "middle")
       .attr("fill", "white")
-      .text(`價格: ${latestPrice}`);
+      .text(`${latestPrice}`);
 
     // -----------------------------
     // 3. 改版 pointer tooltip：滑鼠移入圖表時顯示交叉線與價格
@@ -176,13 +177,14 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
       .attr("height", tooltipHeight)
       .attr("rx", 4)
       .attr("ry", 4)
-      .attr("fill", "#000");
+      .attr("fill", "none");
     const pointerText = pointerTooltip.append("text")
       .attr("x", tooltipWidth / 2)
       .attr("y", tooltipHeight / 2)
       .attr("dy", ".35em")
       .attr("text-anchor", "middle")
-      .attr("fill", "white");
+      .style("font-size", "12px")
+      .attr("fill", "#000");
 
     // 在圖表內新增一個透明 overlay（加入在 g 內，故座標已是內部座標）
     g.append("rect")
@@ -212,11 +214,11 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
         // 根據滑鼠 y 座標反推價格
         const pointerPrice = yScale.invert(my);
         const formattedPrice = pointerPrice.toFixed(2);
-        pointerText.text(`價格: ${formattedPrice}`);
+        pointerText.text(`${formattedPrice}`);
         // 將 pointer tooltip 固定放在右側 (與 y 軸位置相同)
         let pointerTooltipY = my - tooltipHeight / 2;
         pointerTooltipY = Math.max(0, Math.min(pointerTooltipY, innerHeight - tooltipHeight));
-        pointerTooltip.attr("transform", `translate(${innerWidth - tooltipWidth}, ${pointerTooltipY})`);
+        pointerTooltip.attr("transform", `translate(${innerWidth}, ${pointerTooltipY})`);
       });
 
   }, [data, width, height]);
