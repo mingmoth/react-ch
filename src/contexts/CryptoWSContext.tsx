@@ -1,11 +1,13 @@
-// src/contexts/WebSocketContext.tsx
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-interface IWebSocketContext {
+const cryptoWSHeartbeat = "public/heartbeat";
+const cryptoWSRespondHeartbeat = "public/respond-heartbeat";
+
+interface CryptoWebSocketContext {
   socket: WebSocket | null;
 }
 
-const WebSocketContext = createContext<IWebSocketContext>({ socket: null });
+const WebSocketContext = createContext<CryptoWebSocketContext>({ socket: null });
 
 export const CryptoWebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const wsRef = useRef<WebSocket | null>(null);
@@ -24,8 +26,14 @@ export const CryptoWebSocketProvider = ({ children }: { children: React.ReactNod
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       // 處理 heartbeat 訊息
-      if (msg.method === "heartbeat") {
-        console.log("Received heartbeat", msg);
+      const { id, method } = msg
+      if (method === cryptoWSHeartbeat) {
+        console.log("Received heartbeat", id);
+        const heartbeatResponse = {
+          id,
+          method: cryptoWSRespondHeartbeat,
+        }
+        ws.send(JSON.stringify(heartbeatResponse))
         return;
       }
       // 其他訊息可以在這裡進行處理或透過其他方式通知相關元件
