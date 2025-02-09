@@ -1,5 +1,4 @@
-// src/components/CandlestickChart.tsx
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
 export interface Candlestick {
@@ -17,7 +16,7 @@ interface CandlestickChartProps {
   height: number;
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height }) => {
+export default function CandlestickChart ({ data, width, height }: CandlestickChartProps) {
   // 用來儲存前一次最新價格，以便比較漲跌
   const prevLatestPriceRef = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -233,5 +232,3 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
 
   return <svg ref={svgRef}></svg>;
 };
-
-export default CandlestickChart;

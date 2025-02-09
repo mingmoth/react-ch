@@ -1,11 +1,9 @@
-import React from 'react';
 import { CryptoWebSocketProvider } from './contexts/CryptoWSContext';
 import CurrencyChart from './components/CurrencyChart';
 import OrderBooks from './components/OrderBooks';
 import './style.css';
 
-const App: React.FC = () => {
-
+const App = () => {
   return (
     <CryptoWebSocketProvider>
     <div className="app-container">

@@ -32,16 +32,9 @@ export default function OrderBooks() {
       const handleOrderBookMsg = (event: MessageEvent) => {
         try {
           const msg = JSON.parse(event.data);
-          // 處理 heartbeat 訊息（若 API 定義中 heartbeat 的訊息格式不同，可依文件做調整）
-          if (msg.method === "heartbeat") {
-            // 例如：收到 heartbeat 時可更新連線狀態，這裡僅記錄
-            console.log("Received heartbeat");
-            return;
-          }
           if (msg.method === "subscribe") {
             // 若訊息包含 channel 與 data，依 channel 分流處理：處理最佳五檔資料 (頻道格式：book.交易對)
             if (msg?.result?.channel === "book") {
-              // console.log('subscribe', msg.result.data);
               // 取得交易對名稱（例如 "book.BTCUSD-PERP"）
               const instrument = msg.result.instrument_name;
               // 預期 msg.data 結構為 { asks: [[price, volume], ...], bids: [[price, volume], ...] }
