@@ -1,10 +1,12 @@
+import "../styles/OrderBook.css";
+
 interface OrderBookData {
   asks: [number, number][];
   bids: [number, number][];
 }
 
 interface OrderBookProps {
-  instrument: string;
+  currency: string;
   data: OrderBookData;
 }
 
@@ -32,10 +34,10 @@ const renderRows = (rows?: [number, number][]) => {
   ));
 };
 
-export default function OrderBook ({ instrument, data }: OrderBookProps) {
+export default function OrderBook ({ currency, data }: OrderBookProps) {
   return (
     <div className="order-book">
-      <h3>{instrument}</h3>
+      <h3>{currency}</h3>
       <div className="order-book-tables">
       <div className="order-side buy-side">
           <h4 className="buy-title">買方 (Bids)</h4>
@@ -61,7 +63,6 @@ export default function OrderBook ({ instrument, data }: OrderBookProps) {
             <tbody>{renderRows(data?.asks)}</tbody>
           </table>
         </div>
-        
       </div>
     </div>
   );

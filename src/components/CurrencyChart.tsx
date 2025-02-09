@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useCryptoWebSocket } from "../contexts/CryptoWSContext";
 import CandlestickChart from "./CandlestickChart";
 
+interface CurrencyChartProps {
+  currency: string;
+}
+
 export interface CandleStickResponse {
   t: Date;
   o: number;
@@ -21,11 +25,11 @@ export interface Candlestick {
 
 const intervals = ["1m", "5m", "15m", "30m", "1h", "4h", "1D"];
 
-export default function CurrencyChart() {
+export default function CurrencyChart({ currency }: CurrencyChartProps) {
   const { socket } = useCryptoWebSocket();
   const [activeInterval, setActiveInterval] = useState(intervals[0]);
   const [candlesticks, setCandlesticks] = useState<Candlestick[]>([]);
-  
+
   // const intervalClass = (interval: string) =>
   //   interval === activeInterval ? "interval-btn active" : "interval-btn";
 
@@ -34,7 +38,7 @@ export default function CurrencyChart() {
       const msg = JSON.parse(event.data);
       if (msg.method === "subscribe") {
         // 若訊息包含 channel 與 data，依 channel 分流處理:處理 K 線資料 (頻道格式：candlestick.1m.BTCUSD-PERP)
-        if (msg?.result?.channel === "candlestick") {
+        if (msg?.result?.channel === "candlestick" && msg?.result?.instrument_name === currency) {
           // 假設 API 回傳的資料結構為：
           // { t: timestamp, o: open, h: high, l: low, c: close, v: volume }
           const candleDataList = msg.result.data;
@@ -84,26 +88,26 @@ export default function CurrencyChart() {
   };
 
   // 切換 K 線圖間隔時重置圖表，退訂閱舊的 interval，重新訂閱新的 interval
-  function handleActiveIntervalChange(interval: string) {
-    setActiveInterval((prev) => {
-      if (prev !== interval) {
-        socket?.send(
-          JSON.stringify({
-            method: "unsubscribe",
-            params: { channels: [`candlestick.${prev}.BTCUSD-PERP`] },
-          })
-        );
-        socket?.send(
-          JSON.stringify({
-            method: "subscribe",
-            params: { channels: [`candlestick.${interval}.BTCUSD-PERP`] },
-          })
-        );
-      }
-      return interval;
-    });
-    setCandlesticks([]);
-  }
+  // function handleActiveIntervalChange(interval: string) {
+  //   setActiveInterval((prev) => {
+  //     if (prev !== interval) {
+  //       socket?.send(
+  //         JSON.stringify({
+  //           method: "unsubscribe",
+  //           params: { channels: [`candlestick.${prev}.BTCUSD-PERP`] },
+  //         })
+  //       );
+  //       socket?.send(
+  //         JSON.stringify({
+  //           method: "subscribe",
+  //           params: { channels: [`candlestick.${interval}.BTCUSD-PERP`] },
+  //         })
+  //       );
+  //     }
+  //     return interval;
+  //   });
+  //   setCandlesticks([]);
+  // }
 
   useEffect(() => {
     if (socket) {
@@ -111,7 +115,7 @@ export default function CurrencyChart() {
       const candleSubMsg = {
         method: "subscribe",
         params: {
-          channels: [`candlestick.${activeInterval}.BTCUSD-PERP`],
+          channels: [`candlestick.${activeInterval}.${currency}`],
         },
         id: 100, // 任意 id
       };
@@ -126,7 +130,9 @@ export default function CurrencyChart() {
 
   return (
     <>
-      <h4>BTCUSD-PERP {activeInterval} K 線圖</h4>
+      <h4 className="chart-title">{currency} {activeInterval} K 線圖</h4>
+      <CandlestickChart data={candlesticks} width={800} height={400} />
+      
       {/* <div className="interval-selector">
         {intervals.map((interval) => (
           <button
@@ -138,7 +144,6 @@ export default function CurrencyChart() {
           </button>
         ))}
       </div> */}
-      <CandlestickChart data={candlesticks} width={800} height={400} />
     </>
   );
 }

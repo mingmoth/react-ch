@@ -1,3 +1,5 @@
+// 不需使用
+
 import { useEffect, useState } from "react";
 import { useCryptoWebSocket } from "../contexts/CryptoWSContext";
 import OrderBook from "./OrderBook";
@@ -65,7 +67,7 @@ export default function OrderBooks() {
       {
         // 將收到的各交易對最佳五檔資料依交易對分別顯示
         instruments.map((inst) => (
-          <OrderBook key={inst} instrument={inst} data={orderBooks[inst]} />
+          <OrderBook key={inst} currency={inst} data={orderBooks[inst]} />
         ))
       }
     </div>
