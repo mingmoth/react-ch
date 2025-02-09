@@ -157,16 +157,12 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
     crosshair.append("line")
       .attr("class", "crosshair-vertical")
       .attr("stroke", "gray")
-      .attr("stroke-dasharray", "3,3")
-      .attr("y1", 0)
-      .attr("y2", innerHeight);
+      .attr("stroke-dasharray", "3,3");
     // 水平線 (全寬)
     crosshair.append("line")
       .attr("class", "crosshair-horizontal")
       .attr("stroke", "gray")
-      .attr("stroke-dasharray", "3,3")
-      .attr("x1", 0)
-      .attr("x2", innerWidth);
+      .attr("stroke-dasharray", "3,3");
 
     // 建立 pointer tooltip，用來顯示滑鼠當下的價格，顯示位置固定在右側
     const pointerTooltip = g.append("g")
@@ -207,14 +203,18 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, width, height
         // 更新交叉線：垂直線 x 座標；水平線 y 座標
         crosshair.select(".crosshair-vertical")
           .attr("x1", mx)
-          .attr("x2", mx);
+          .attr("x2", mx)
+          .attr("y1", 0)
+          .attr("y2", innerHeight);;
         crosshair.select(".crosshair-horizontal")
           .attr("y1", my)
-          .attr("y2", my);
+          .attr("y2", my)
+          .attr("x1", 0)
+          .attr("x2", innerWidth);
         // 根據滑鼠 y 座標反推價格
         const pointerPrice = yScale.invert(my);
         const formattedPrice = pointerPrice.toFixed(2);
-        pointerText.text(`${formattedPrice}`);
+        pointerText.text(`${Number(formattedPrice).toFixed(1)}`);
         // 將 pointer tooltip 固定放在右側 (與 y 軸位置相同)
         let pointerTooltipY = my - tooltipHeight / 2;
         pointerTooltipY = Math.max(0, Math.min(pointerTooltipY, innerHeight - tooltipHeight));
