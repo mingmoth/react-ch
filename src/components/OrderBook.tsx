@@ -37,30 +37,31 @@ export default function OrderBook ({ instrument, data }: OrderBookProps) {
     <div className="order-book">
       <h3>{instrument}</h3>
       <div className="order-book-tables">
-        <div className="order-side sell-side">
-          <h4 className="sell-title">賣方 (Asks)</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>價格</th>
-                <th>數量</th>
-              </tr>
-            </thead>
-            <tbody>{renderRows(data?.asks)}</tbody>
-          </table>
-        </div>
-        <div className="order-side buy-side">
+      <div className="order-side buy-side">
           <h4 className="buy-title">買方 (Bids)</h4>
           <table>
             <thead>
               <tr>
-                <th>價格</th>
-                <th>數量</th>
+                <th>Price</th>
+                <th>Amount</th>
               </tr>
             </thead>
             <tbody>{renderRows(data?.bids)}</tbody>
           </table>
         </div>
+        <div className="order-side sell-side">
+          <h4 className="sell-title">賣方 (Asks)</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Price</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>{renderRows(data?.asks)}</tbody>
+          </table>
+        </div>
+        
       </div>
     </div>
   );

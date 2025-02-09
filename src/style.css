@@ -45,6 +45,7 @@
 .sell-title {
   color: red;
   text-align: center;
+  margin: 0;
 }
 
 .buy-side th,
@@ -52,6 +53,7 @@
 .buy-title {
   color: green;
   text-align: center;
+  margin: 0;
 }
 
 .chart-section {
