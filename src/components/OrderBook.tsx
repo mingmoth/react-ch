@@ -12,7 +12,6 @@ interface OrderBookProps {
 }
 
 const OrderBook: React.FC<OrderBookProps> = ({ instrument, data }) => {
-  console.log('data', data);
   return (
     <div className="order-book">
       <h3>{instrument}</h3>

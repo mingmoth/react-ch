@@ -83,7 +83,7 @@ const App: React.FC = () => {
           if (msg?.result?.channel && msg?.result?.data) {
             // 處理最佳五檔資料 (頻道格式：book.交易對)
             if (msg?.result.channel === "book") {
-              console.log('subscribe', msg.result.data);
+              // console.log('subscribe', msg.result.data);
               // 取得交易對名稱（例如 "book.BTCUSD-PERP"）
               const instrument = msg.result.instrument_name;
               // 預期 msg.data 結構為 { asks: [[price, volume], ...], bids: [[price, volume], ...] }
