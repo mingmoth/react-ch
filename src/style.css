@@ -58,3 +58,18 @@
   margin-top: 40px;
   text-align: center;
 }
+
+.interval-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.interval-btn {
+  border: lightgray 1px solid;
+}
+
+.interval-btn.active {
+  background-color: black;
+  color: white;
+}

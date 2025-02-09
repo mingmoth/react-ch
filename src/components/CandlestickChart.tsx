@@ -1,7 +1,15 @@
 // src/components/CandlestickChart.tsx
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import { Candlestick } from '../App';
+
+export interface Candlestick {
+  time: Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
 
 interface CandlestickChartProps {
   data: Candlestick[];
