@@ -13,53 +13,62 @@ export const CryptoWebSocketProvider = ({ children }: { children: React.ReactNod
   const wsRef = useRef<WebSocket | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
-  // 建立連線的函式
-  const connectWebSocket = () => {
-    const ws = new WebSocket('wss://stream.crypto.com/exchange/v1/market');
-    wsRef.current = ws;
 
-    ws.onopen = () => {
-      console.log("WebSocket 連線已建立");
-      setSocket(ws);
-    };
+  function connectWebSocket () {
+    try {
+      const ws = new WebSocket('wss://stream.crypto.com/exchange/v1/market');
+      wsRef.current = ws;
 
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      // 處理 heartbeat 訊息
-      const { id, method } = msg
-      if (method === cryptoWSHeartbeat) {
-        console.log("Received heartbeat", id);
-        const heartbeatResponse = {
-          id,
-          method: cryptoWSRespondHeartbeat,
+      ws.onopen = () => {
+        console.log("WebSocket connect");
+        setSocket(ws);
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          const { id, method } = msg;
+          // 處理 heartbeat 訊息
+          if (method === cryptoWSHeartbeat) {
+            console.log("Received heartbeat", id);
+            const heartbeatResponse = {
+              id,
+              method: cryptoWSRespondHeartbeat,
+            };
+            try {
+              ws.send(JSON.stringify(heartbeatResponse));
+            } catch (sendError) {
+              console.error("Error sending heartbeat response:", sendError);
+            }
+            return;
+          }
+        } catch (parseError) {
+          console.error("Error parsing WebSocket message:", parseError);
         }
-        ws.send(JSON.stringify(heartbeatResponse))
-        return;
-      }
-      // 其他訊息可以在這裡進行處理或透過其他方式通知相關元件
-    };
+      };
 
-    ws.onerror = (err) => {
-      console.error("WebSocket error:", err);
-    };
+      ws.onerror = (event: Event) => {
+        console.error("WebSocket error:", event);
+      };
 
-    ws.onclose = () => {
-      console.log("WebSocket 連線已關閉");
-      setSocket(null);
-      wsRef.current = null;
-    };
+      ws.onclose = (event: CloseEvent) => {
+        console.log("WebSocket close:", event);
+        setSocket(null);
+        wsRef.current = null;
+      };
+    } catch (error) {
+      console.error("Failed to create WebSocket connection:", error);
+    }
   };
 
   useEffect(() => {
-    // 頁面首次載入時連線
+    // 首次載入時建立連線
     connectWebSocket();
 
-    // 當頁面變回可見時，重新檢查並連線
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        // 如果目前沒有連線，或連線狀態非 OPEN（數值 1）
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-          console.log("頁面回到可見狀態，重新連線 WebSocket");
+          console.log("Reconnect WebSocket");
           connectWebSocket();
         }
       }
@@ -67,10 +76,9 @@ export const CryptoWebSocketProvider = ({ children }: { children: React.ReactNod
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // 清除監聽器
+    // 清除監聽
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      // 根據需求，可以在 unmount 時關閉連線
       if (wsRef.current) {
         wsRef.current.close();
       }
@@ -84,7 +92,6 @@ export const CryptoWebSocketProvider = ({ children }: { children: React.ReactNod
   );
 };
 
-// 自定義 hook
 export const useCryptoWebSocket = () => {
   return useContext(WebSocketContext);
 };
