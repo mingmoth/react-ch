@@ -14,23 +14,27 @@ type OrderType = "asks" | "bids";
 
 // 五檔報價
 const orderSize = 5;
-const orderType: OrderType[] = ["asks", "bids"];
+const orderTypes: OrderType[] = ["asks", "bids"];
 
 /**
  * 根據傳入的資料陣列渲染表格列，
- * 若資料不存在或為空則回傳 orderSize 筆預設的 placeholder 列
+ * 若資料不存在或為空則渲染預設數量列。
  */
 const renderRows = (
-  rows?: [number, number][],
-  type: OrderType = orderType[0]
+  rows: [number, number][] | undefined,
+  type: OrderType = orderTypes[0]
 ) => {
-  if (rows && rows.length > 0) {
-    return rows.map((row, idx) => (
-      <tr key={idx}>
-        <td>{type === "asks" ? row[0] : row[1]}</td>
-        <td>{type === "asks" ? row[1] : row[0]}</td>
-      </tr>
-    ));
+  try {
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows.map((row, idx) => (
+        <tr key={idx}>
+          <td>{type === "asks" ? row[0] : row[1]}</td>
+          <td>{type === "asks" ? row[1] : row[0]}</td>
+        </tr>
+      ));
+    }
+  } catch (error) {
+    console.error("Error rendering rows:", error);
   }
   return Array.from({ length: orderSize }, (_, idx) => (
     <tr key={idx}>
@@ -54,7 +58,7 @@ export default function OrderBook({ currency, data }: OrderBookProps) {
                 <th>Price</th>
               </tr>
             </thead>
-            <tbody>{renderRows(data?.bids, orderType[1])}</tbody>
+            <tbody>{renderRows(data?.bids, "bids")}</tbody>
           </table>
         </div>
         <div className="order-side sell-side">
@@ -66,7 +70,7 @@ export default function OrderBook({ currency, data }: OrderBookProps) {
                 <th>Amount</th>
               </tr>
             </thead>
-            <tbody>{renderRows(data?.asks)}</tbody>
+            <tbody>{renderRows(data?.asks, "asks")}</tbody>
           </table>
         </div>
       </div>
