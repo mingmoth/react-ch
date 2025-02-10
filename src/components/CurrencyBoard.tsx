@@ -12,7 +12,8 @@ interface OrderBookData {
   bids: [number, number][];
 }
 
-const subscribeChannel = "book";
+const wsSubscribeMethod = "subscribe";
+const orderBookChannel = "book";
 const bookInstrumentDepth = 10;
 
 export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
@@ -25,10 +26,10 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
   function handleOrderBookMsg(event: MessageEvent) {
     try {
       const msg = JSON.parse(event.data);
-      if (msg.method === "subscribe") {
+      if (msg.method === wsSubscribeMethod) {
         // 若訊息包含 channel 與 data，依 channel 分流處理：處理最佳五檔資料 (頻道格式：book.交易對)
         if (
-          msg?.result?.channel === "book" &&
+          msg?.result?.channel === orderBookChannel &&
           msg?.result?.instrument_name === currency
         ) {
           // 如收到多於五筆資料，僅取前五筆
@@ -46,9 +47,9 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
   useEffect(() => {
     if (!socket) return;
     const subMsg = {
-      method: "subscribe",
+      method: wsSubscribeMethod,
       params: {
-        channels: [`${subscribeChannel}.${currency}.${bookInstrumentDepth}`],
+        channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`],
       },
     };
     socket.send(JSON.stringify(subMsg));
@@ -61,9 +62,7 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
 
   return (
     <div className="currency-board">
-      <div>
-        <OrderBook currency={currency} data={orderBook} />
-      </div>
+      <OrderBook currency={currency} data={orderBook} />
       <div className="chart-section">
         <CurrencyChart currency={currency} />
       </div>

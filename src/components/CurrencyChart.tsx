@@ -35,6 +35,9 @@ function LoadingChart() {
   );
 }
 
+const wsSubscribeMethod = "subscribe";
+const candlestickChannel = "candlestick";
+
 function CurrencyChart({ currency }: CurrencyChartProps) {
   const { socket } = useCryptoWebSocket();
   const [activeInterval, setActiveInterval] = useState(intervals[0]);
@@ -46,9 +49,9 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
   const handleCandlestickMsg = (event: MessageEvent) => {
     try {
       const msg = JSON.parse(event.data);
-      if (msg.method === "subscribe") {
+      if (msg.method === wsSubscribeMethod) {
         // 若訊息包含 channel 與 data，依 channel 分流處理:處理 K 線資料 (頻道格式：candlestick.1m.BTCUSD-PERP)
-        if (msg?.result?.channel === "candlestick" && msg?.result?.instrument_name === currency) {
+        if (msg?.result?.channel === candlestickChannel && msg?.result?.instrument_name === currency) {
           // 假設 API 回傳的資料結構為：
           // { t: timestamp, o: open, h: high, l: low, c: close, v: volume }
           const candleDataList = msg.result.data;
@@ -121,11 +124,10 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
     if (socket) {
       // 訂閱 BTCUSD-PERP 的 1 分鐘 K 線資料
       const candleSubMsg = {
-        method: "subscribe",
+        method: wsSubscribeMethod,
         params: {
-          channels: [`candlestick.${activeInterval}.${currency}`],
+          channels: [`${candlestickChannel}.${activeInterval}.${currency}`],
         },
-        id: 100, // 任意 id
       };
       socket.send(JSON.stringify(candleSubMsg));
 
