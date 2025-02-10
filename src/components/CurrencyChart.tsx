@@ -98,28 +98,6 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
     }
   };
 
-  // 切換 K 線圖間隔時重置圖表，退訂閱舊的 interval，重新訂閱新的 interval
-  // function handleActiveIntervalChange(interval: string) {
-  //   setActiveInterval((prev) => {
-  //     if (prev !== interval) {
-  //       socket?.send(
-  //         JSON.stringify({
-  //           method: "unsubscribe",
-  //           params: { channels: [`candlestick.${prev}.BTCUSD-PERP`] },
-  //         })
-  //       );
-  //       socket?.send(
-  //         JSON.stringify({
-  //           method: "subscribe",
-  //           params: { channels: [`candlestick.${interval}.BTCUSD-PERP`] },
-  //         })
-  //       );
-  //     }
-  //     return interval;
-  //   });
-  //   setCandlesticks([]);
-  // }
-
   useEffect(() => {
     if (socket) {
       // 訂閱 BTCUSD-PERP 的 1 分鐘 K 線資料
@@ -140,7 +118,6 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
 
   return (
     <>
-      {/* <h4 className="chart-title">{currency} {activeInterval} K 線圖</h4> */}
       <div style={{ width: '100%' , height: chartHeight }}>
         <ResponsiveContainer resizingFallback={<LoadingChart />}>
           {({ width, height }) => (
@@ -148,18 +125,6 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
           )}
         </ResponsiveContainer>
       </div>
-      
-      {/* <div className="interval-selector">
-        {intervals.map((interval) => (
-          <button
-            key={interval}
-            className={intervalClass(interval)}
-            onClick={() => handleActiveIntervalChange(interval)}
-          >
-            {interval}
-          </button>
-        ))}
-      </div> */}
     </>
   );
 }
