@@ -25,7 +25,7 @@ export default function CandlestickChart ({ data, width, height }: CandlestickCh
     if (!data || data.length === 0) return;
 
     // 設定圖表邊距與內部尺寸
-    const margin = { top: 20, right: 50, bottom: 30, left: 50 };
+    const margin = { top: 20, right: 50, bottom: 20, left: 20 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 

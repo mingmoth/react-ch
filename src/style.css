@@ -11,9 +11,12 @@
 }
 
 .currency-board {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* flex-wrap: wrap; */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
   gap: 20px;
 }
 
@@ -46,4 +49,34 @@
 .interval-btn.active {
   background-color: black;
   color: white;
+}
+
+.loading-chart {
+  padding: 20px 50px 20px 20px;
+  box-sizing: border-box;
+}
+
+.loading-chart-section {
+  background-color: hsl(240 4.8% 95.9%);
+  animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite;
+  height: 100%;
+  border: 1px solid black;
+  border-left: none;
+  border-top: none;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 767px) {
+  .currency-board {
+    grid-template-columns: 1fr;
+  }
+  .chart-section,
+  .orderbook-section {
+    width: 100%;
+  }
 }

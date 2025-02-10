@@ -27,7 +27,10 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
       const msg = JSON.parse(event.data);
       if (msg.method === "subscribe") {
         // 若訊息包含 channel 與 data，依 channel 分流處理：處理最佳五檔資料 (頻道格式：book.交易對)
-        if (msg?.result?.channel === "book" && msg?.result?.instrument_name === currency) {
+        if (
+          msg?.result?.channel === "book" &&
+          msg?.result?.instrument_name === currency
+        ) {
           // 如收到多於五筆資料，僅取前五筆
           setOrderBook({
             asks: msg.result.data[0].asks.slice(0, 5),
@@ -57,9 +60,9 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
   }, [socket]);
 
   return (
-    <div className="currency-board" >
+    <div className="currency-board">
       <div>
-      <OrderBook currency={currency} data={orderBook}  />
+        <OrderBook currency={currency} data={orderBook} />
       </div>
       <div className="chart-section">
         <CurrencyChart currency={currency} />
