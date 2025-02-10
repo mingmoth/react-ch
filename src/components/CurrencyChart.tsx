@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useCryptoWebSocket } from "../contexts/CryptoWSContext";
 import CandlestickChart from "./CandlestickChart";
+import ResponsiveContainer from "./ResponsiveContainer";
 
 interface CurrencyChartProps {
   currency: string;
@@ -24,8 +25,17 @@ export interface Candlestick {
 }
 
 const intervals = ["1m", "5m", "15m", "30m", "1h", "4h", "1D"];
+const chartHeight = '400px';
 
-export default function CurrencyChart({ currency }: CurrencyChartProps) {
+function LoadingChart() {
+  return (
+    <div className="loading-chart" style={{ height: chartHeight }}>
+      <div className="loading-chart-section"></div>
+    </div>
+  );
+}
+
+function CurrencyChart({ currency }: CurrencyChartProps) {
   const { socket } = useCryptoWebSocket();
   const [activeInterval, setActiveInterval] = useState(intervals[0]);
   const [candlesticks, setCandlesticks] = useState<Candlestick[]>([]);
@@ -78,9 +88,7 @@ export default function CurrencyChart({ currency }: CurrencyChartProps) {
               return updated.slice(-300);
             });
           }
-          // 將新 K 線資料納入陣列（範例中保留最近 60 筆資料）
         }
-        // }
       }
     } catch (error) {
       console.error("Error processing WebSocket message:", error);
@@ -130,8 +138,14 @@ export default function CurrencyChart({ currency }: CurrencyChartProps) {
 
   return (
     <>
-      <h4 className="chart-title">{currency} {activeInterval} K 線圖</h4>
-      <CandlestickChart data={candlesticks} width={800} height={400} />
+      {/* <h4 className="chart-title">{currency} {activeInterval} K 線圖</h4> */}
+      <div style={{ width: '100%' , height: chartHeight }}>
+        <ResponsiveContainer resizingFallback={<LoadingChart />}>
+          {({ width, height }) => (
+            <CandlestickChart key={currency} data={candlesticks} width={width} height={height} />
+          )}
+        </ResponsiveContainer>
+      </div>
       
       {/* <div className="interval-selector">
         {intervals.map((interval) => (
@@ -147,3 +161,5 @@ export default function CurrencyChart({ currency }: CurrencyChartProps) {
     </>
   );
 }
+
+export default memo(CurrencyChart, (prev, next) => prev.currency === next.currency);
