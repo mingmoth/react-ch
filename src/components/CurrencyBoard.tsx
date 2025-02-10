@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCryptoWebSocket } from "../contexts/CryptoWSContext";
 import CurrencyChart from "./CurrencyChart";
 import OrderBook from "./OrderBook";
@@ -24,7 +24,7 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
     bids: [],
   });
 
-  function handleOrderBookMsg(event: MessageEvent) {
+  const handleOrderBookMsg = useCallback((event: MessageEvent) => {
     try {
       const msg = JSON.parse(event.data);
       if (msg.method === wsSubscribeMethod) {
@@ -44,7 +44,7 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
     } catch (error) {
       console.error("Error processing WebSocket message:", error);
     }
-  }
+  }, [currency])
 
   useEffect(() => {
     if (!socket) return;
@@ -68,7 +68,7 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
     socket.addEventListener("message", handleOrderBookMsg);
     return () => {
       socket.removeEventListener("message", handleOrderBookMsg);
-      // unsubscribe order book
+      // unsubscribe order book ws
       const unsubMsg = {
         method: wsUnSubscribeMethod,
         params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
