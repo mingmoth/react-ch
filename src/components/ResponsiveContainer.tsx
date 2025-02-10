@@ -1,12 +1,11 @@
 // src/components/ResponsiveContainer.tsx
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, ReactNode, CSSProperties } from "react";
 
 interface ResponsiveContainerProps {
-  // children: (dimensions: { width: number; height: number }) => JSX.Element;
-  children: (dimensions: { width: number; height: number }) => React.ReactNode;
+  children: (dimensions: { width: number; height: number }) => ReactNode;
   className?: string;
-  style?: React.CSSProperties;
-  resizingFallback?: React.ReactNode | undefined;
+  style?: CSSProperties;
+  resizingFallback?: ReactNode;
 }
 
 export default function ResponsiveContainer({
@@ -20,36 +19,72 @@ export default function ResponsiveContainer({
   const [isResizing, setIsResizing] = useState(false);
   const resizeTimeout = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    function handleResize() {
+  // 封裝更新容器尺寸
+  const updateDimensions = () => {
+    try {
       if (containerRef.current) {
         setDimensions({
           width: containerRef.current.offsetWidth,
           height: containerRef.current.offsetHeight,
         });
       }
+    } catch (error) {
+      console.error("Error updating dimensions:", error);
     }
-    handleResize(); // 初次設定
-    function delayResize() {
-      setIsResizing(true);
-      clearTimeout(resizeTimeout.current);
+  };
 
-      resizeTimeout.current = setTimeout(() => {
-        handleResize();
+  useEffect(() => {
+    // 初次更新尺寸
+    updateDimensions();
+
+    // 定義直接更新的 handler
+    const handleResize = () => {
+      updateDimensions();
+    };
+
+    // 定義 debounce 的 handler
+    const handleResizeDebounced = () => {
+      setIsResizing(true);
+      if (resizeTimeout.current !== null) {
+        clearTimeout(resizeTimeout.current);
+        resizeTimeout.current = undefined;
+      }
+
+      resizeTimeout.current = window.setTimeout(() => {
+        updateDimensions();
         setIsResizing(false);
       }, 1000);
-    }
-    window.addEventListener("resize", resizingFallback ? delayResize : handleResize);
-    return () => window.removeEventListener("resize", resizingFallback ? delayResize : handleResize);
+    };
+
+    // 根據是否提供 resizingFallback 來決定使用 debounce 還是立即更新
+    const resizeHandler = resizingFallback ? handleResizeDebounced : handleResize;
+
+    window.addEventListener("resize", resizeHandler);
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+      if (resizeTimeout.current !== null) {
+        clearTimeout(resizeTimeout.current);
+      }
+    };
   }, []);
 
+  const hasValidDimensions = dimensions.width > 0 && dimensions.height > 0;
+
   return (
-    <div ref={containerRef} className={className} style={{ ...style, width: "100%", height: "100%" }}>
-      {resizingFallback ? 
-        dimensions.width && dimensions.height && !isResizing ? children(dimensions) : ( resizingFallback )
-       : 
-        dimensions.width && dimensions.height ? children(dimensions) : null
-      }
+    <div
+      ref={containerRef}
+      className={className}
+      style={{ ...style, width: "100%", height: "100%" }}
+    >
+      {resizingFallback ? (
+        hasValidDimensions && !isResizing ? (
+          children(dimensions)
+        ) : (
+          resizingFallback
+        )
+      ) : hasValidDimensions ? (
+        children(dimensions)
+      ) : null}
     </div>
   );
 }
