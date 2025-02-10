@@ -13,6 +13,7 @@ interface OrderBookData {
 }
 
 const wsSubscribeMethod = "subscribe";
+const wsUnSubscribeMethod = "unsubscribe";
 const orderBookChannel = "book";
 const bookInstrumentDepth = 10;
 
@@ -27,16 +28,17 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
     try {
       const msg = JSON.parse(event.data);
       if (msg.method === wsSubscribeMethod) {
-        // 若訊息包含 channel 與 data，依 channel 分流處理：處理最佳五檔資料 (頻道格式：book.交易對)
         if (
           msg?.result?.channel === orderBookChannel &&
           msg?.result?.instrument_name === currency
         ) {
-          // 如收到多於五筆資料，僅取前五筆
-          setOrderBook({
-            asks: msg.result.data[0].asks.slice(0, 5),
-            bids: msg.result.data[0].bids.slice(0, 5),
-          });
+          // 第一筆的 asks 與 bids，各取前五筆
+          if (msg.result.data && msg.result.data[0]) {
+            setOrderBook({
+              asks: msg.result.data[0].asks.slice(0, 5),
+              bids: msg.result.data[0].bids.slice(0, 5),
+            });
+          }
         }
       }
     } catch (error) {
@@ -52,13 +54,34 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
         channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`],
       },
     };
-    socket.send(JSON.stringify(subMsg));
+
+    try {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(subMsg));
+      } else {
+        console.warn("Socket is not open. Current readyState:", socket.readyState);
+      }
+    } catch (err) {
+      console.error("Failed to send subscription message:", err);
+    }
 
     socket.addEventListener("message", handleOrderBookMsg);
     return () => {
       socket.removeEventListener("message", handleOrderBookMsg);
+      // unsubscribe order book
+      const unsubMsg = {
+        method: wsUnSubscribeMethod,
+        params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
+      };
+      try {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify(unsubMsg));
+        }
+      } catch (err) {
+        console.error("Failed to send unsubscribe message:", err);
+      }
     };
-  }, [socket]);
+  }, [socket, currency]);
 
   return (
     <div className="currency-board">
