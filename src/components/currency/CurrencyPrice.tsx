@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import useCryptoWSSubscribe from "../../hooks/useCryptoWSSubscribe";
-import { handleCryptoWSTradeMsg } from "../../utils/cryptoWSData";
+import { handleCryptoWSTradeMsg } from "../../utils/cryptoMsgHandler";
 import {
   tradeChannel,
   wsSubscribeMethod,

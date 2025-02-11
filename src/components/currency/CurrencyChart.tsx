@@ -1,6 +1,6 @@
 import { memo, useCallback, useState } from "react";
 import useCryptoWSSubscribe from '../../hooks/useCryptoWSSubscribe';
-import { handleCryptoWSCandlestickMsg } from '../../utils/cryptoWSData';
+import { handleCryptoWSCandlestickMsg } from '../../utils/cryptoMsgHandler';
 import {
   candlestickChannel,
   candlestickDataSize,

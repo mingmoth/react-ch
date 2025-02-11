@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import useCryptoWSSubscribe from '../../hooks/useCryptoWSSubscribe';
-import { handleCryptoWSOrderBookMsg } from "../../utils/cryptoWSData";
+import { handleCryptoWSOrderBookMsg } from "../../utils/cryptoMsgHandler";
 import {
   bookInstrumentDepth,
   orderBookChannel,
