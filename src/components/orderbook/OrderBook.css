@@ -1,8 +1,8 @@
 .order-book {
-  border: 1px solid #ccc;
-  padding: 10px;
-  width: 300px;
+  padding: 12px;
+  min-width: 300px;
   background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
 .order-book h3 {
@@ -11,11 +11,12 @@
 
 .order-book-tables {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  gap: 12px;
 }
 
 .order-side {
-  width: 45%;
+  width: fill;
 }
 
 .order-side table {
@@ -26,7 +27,7 @@
 .order-side th, .order-side td {
   padding: 4px;
   text-align: right;
-  border-bottom: 1px solid #ddd;
+  /* border-bottom: 1px solid #ddd; */
 }
 .sell-side th,
 .sell-side td,

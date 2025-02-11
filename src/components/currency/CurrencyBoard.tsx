@@ -45,13 +45,15 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
 
   return (
     <div className="currency-board">
-      <div>
+      <div className="currency-header">
         <h3>{currency}</h3>
         <CurrencyPrice currency={currency} />
-        <OrderBook data={orderBook} />
       </div>
-      <div className="chart-section">
-        <CurrencyChart currency={currency} />
+      <div className="currency-content">
+        <div className="chart-section">
+          <CurrencyChart currency={currency} />
+        </div>
+        <OrderBook data={orderBook} />
       </div>
     </div>
   );

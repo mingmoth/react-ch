@@ -42,20 +42,23 @@
 
 .app-container {
   font-family: Arial, sans-serif;
-}
-
-.order-books {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  padding: 24px;
 }
 
 .currency-board {
+  padding: 16px;
+}
+
+.currency-header {
+  display: flex;
+  gap: 12px;
+}
+
+.currency-content {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 20px;
-  padding: 20px;
 }
 
 .chart-section {
@@ -110,7 +113,7 @@
 }
 
 @media (max-width: 767px) {
-  .currency-board {
+  .currency-content {
     grid-template-columns: 1fr;
   }
   .chart-section,
