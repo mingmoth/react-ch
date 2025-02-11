@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { useCryptoWebSocket } from "../contexts/CryptoWSContext";
+import { useCryptoWebSocket } from "../../contexts/CryptoWSContext";
 import CurrencyChart from "./CurrencyChart";
-import OrderBook from "./orderbook/OrderBook";
+import OrderBook from "../orderbook/OrderBook";
 
 interface CurrencyBoardProps {
   currency: string;

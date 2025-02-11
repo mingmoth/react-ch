@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useState } from "react";
-import { useCryptoWebSocket } from "../contexts/CryptoWSContext";
-import CandlestickChart from "./CandlestickChart";
-import ResponsiveContainer from "./common/ResponsiveContainer";
+import { useCryptoWebSocket } from "../../contexts/CryptoWSContext";
+import CandlestickChart from "../chart/CandlestickChart";
+import ResponsiveContainer from "../common/ResponsiveContainer";
 
 interface CurrencyChartProps {
   currency: string;

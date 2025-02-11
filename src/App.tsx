@@ -1,5 +1,5 @@
 import { CryptoWebSocketProvider } from "./contexts/CryptoWSContext";
-import CurrencyBoard from "./components/CurrencyBoard";
+import CurrencyBoard from "./components/currency/CurrencyBoard";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
 
