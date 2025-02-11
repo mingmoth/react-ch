@@ -1,7 +1,6 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  text-align: center;
 }
 
 .logo {
@@ -43,15 +42,29 @@
 .app-container {
   font-family: Arial, sans-serif;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.app-title{
+  margin: 0;
 }
 
 .currency-board {
-  padding: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid lightgray;
 }
 
 .currency-header {
   display: flex;
   gap: 12px;
+}
+
+.currency-title,
+.currency-price {
+  margin-top: 0;
 }
 
 .currency-content {

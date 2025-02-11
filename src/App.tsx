@@ -9,6 +9,7 @@ const App = () => {
     <CryptoWebSocketProvider>
       <ErrorBoundary>
         <div className="app-container">
+          <h2 className="app-title">Crypto Dashboard</h2>
           {currencies.map((currency) => (
             <CurrencyBoard key={currency} currency={currency} />
           ))}

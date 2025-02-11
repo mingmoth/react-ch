@@ -17,6 +17,7 @@
 
 .order-side {
   width: -webkit-fill-available;
+  text-align: center;
 }
 
 .order-head {

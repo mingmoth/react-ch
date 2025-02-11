@@ -49,5 +49,5 @@ export default function CurrencyPrice({ currency }: CurrencyPriceProps) {
 
   useCryptoWSSubscribe(subMsg, unsubMsg, handleTradeMsg);
 
-  return <h3 style={{ color: priceColor() }}>{currPrice}</h3>;
+  return <h3 className="currency-price" style={{ color: priceColor() }}>{currPrice}</h3>;
 }
