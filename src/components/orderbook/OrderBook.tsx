@@ -1,4 +1,5 @@
 import "./OrderBook.css";
+import { orderSize } from "../../configs/cryptoWSConfig";
 
 interface OrderBookData {
   asks: [number, number][];
@@ -12,8 +13,6 @@ interface OrderBookProps {
 
 type OrderType = "asks" | "bids";
 
-// 五檔報價
-const orderSize = 5;
 const orderTypes: OrderType[] = ["asks", "bids"];
 
 /**

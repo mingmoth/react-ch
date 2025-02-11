@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useCryptoWebSocket } from "../../contexts/CryptoWSContext";
+import { handleCryptoWSOrderBookMsg } from "../../utils/cryptoWSData";
+import {
+  bookInstrumentDepth,
+  orderBookChannel,
+  wsSubscribeMethod,
+  wsUnSubscribeMethod,
+} from "../../configs/cryptoWSConfig";
 import CurrencyChart from "./CurrencyChart";
 import OrderBook from "../orderbook/OrderBook";
 
@@ -12,11 +19,6 @@ interface OrderBookData {
   bids: [number, number][];
 }
 
-const wsSubscribeMethod = "subscribe";
-const wsUnSubscribeMethod = "unsubscribe";
-const orderBookChannel = "book";
-const bookInstrumentDepth = 10;
-
 export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
   const { socket } = useCryptoWebSocket();
   const [orderBook, setOrderBook] = useState<OrderBookData>({
@@ -25,26 +27,10 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
   });
 
   const handleOrderBookMsg = useCallback((event: MessageEvent) => {
-    try {
-      const msg = JSON.parse(event.data);
-      if (msg.method === wsSubscribeMethod) {
-        if (
-          msg?.result?.channel === orderBookChannel &&
-          msg?.result?.instrument_name === currency
-        ) {
-          // 第一筆的 asks 與 bids，各取前五筆
-          if (msg.result.data && msg.result.data[0]) {
-            setOrderBook({
-              asks: msg.result.data[0].asks.slice(0, 5),
-              bids: msg.result.data[0].bids.slice(0, 5),
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error processing WebSocket message:", error);
-    }
-  }, [currency])
+    const msg = handleCryptoWSOrderBookMsg(event, currency);
+    if(!msg) return;
+    setOrderBook(msg);
+  }, [currency]);
 
   useEffect(() => {
     if (!socket) return;

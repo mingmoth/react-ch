@@ -1,5 +1,12 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import { useCryptoWebSocket } from "../../contexts/CryptoWSContext";
+import { handleCryptoWSCandlestickMsg } from '../../utils/cryptoWSData';
+import {
+  candlestickChannel,
+  candlestickDataSize,
+  wsSubscribeMethod,
+  wsUnSubscribeMethod,
+} from "../../configs/cryptoWSConfig";
 import CandlestickChart from "../chart/CandlestickChart";
 import ResponsiveContainer from "../common/ResponsiveContainer";
 
@@ -35,70 +42,34 @@ function LoadingChart() {
   );
 }
 
-const wsSubscribeMethod = "subscribe";
-const wsUnSubscribeMethod = "unsubscribe";
-const candlestickChannel = "candlestick";
-
 function CurrencyChart({ currency }: CurrencyChartProps) {
   const { socket } = useCryptoWebSocket();
   const [activeInterval] = useState(intervals[0]);
   const [candlesticks, setCandlesticks] = useState<Candlestick[]>([]);
 
-  const handleCandlestickMsg = useCallback(
-    (event: MessageEvent) => {
-      try {
-        const msg = JSON.parse(event.data);
-        if (msg.method === wsSubscribeMethod) {
-          // 修改條件：使用 startsWith 判斷頻道字首，並檢查 instrument_name
-          if (
-            msg?.result?.channel.startsWith(candlestickChannel) &&
-            msg?.result?.instrument_name === currency
-          ) {
-            const candleDataList = msg.result.data;
-            if (Array.isArray(candleDataList)) {
-              if (candleDataList.length > 1) {
-                const candleData: Candlestick[] = candleDataList
-                  .map((item: CandleStickResponse) => ({
-                    time: new Date(item.t),
-                    open: item.o,
-                    high: item.h,
-                    low: item.l,
-                    close: item.c,
-                    volume: item.v,
-                  }))
-                  .slice(-60);
-                // 如果收到的是歷史資料，直接替換狀態
-                setCandlesticks(candleData);
-              } else if (candleDataList.length === 1) {
-                const candleDataRes: CandleStickResponse = candleDataList[0];
-                const newCandle: Candlestick = {
-                  time: new Date(candleDataRes.t),
-                  open: candleDataRes.o,
-                  high: candleDataRes.h,
-                  low: candleDataRes.l,
-                  close: candleDataRes.c,
-                  volume: candleDataRes.v,
-                };
-                setCandlesticks((prev) => {
-                  const updated = [
-                    ...prev.filter(
-                      (c) => c.time.getTime() !== newCandle.time.getTime()
-                    ),
-                    newCandle,
-                  ];
-                  updated.sort((a, b) => a.time.getTime() - b.time.getTime());
-                  return updated.slice(-300);
-                });
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error processing WebSocket message:", error);
-      }
-    },
-    [currency]
-  );
+  const handleCandlestickMsg = useCallback((event: MessageEvent) => {
+    const candleData = handleCryptoWSCandlestickMsg(event, currency);
+    if (!candleData) return;
+    if (Array.isArray(candleData) && candleData.length > 1) {
+      const data = candleData.slice(-candlestickDataSize);
+      // 如果收到的是歷史資料，直接替換狀態
+      setCandlesticks(data);
+    } else if(candleData.length === 1) {
+      const data = candleData[0]
+      // 更新最後一筆 candlestick 資料
+      setCandlesticks((prev) => {
+        const updated = [
+          ...prev.filter(
+            (c) => c.time.getTime() !== data.time.getTime()
+          ),
+          data,
+        ];
+        updated.sort((a, b) => a.time.getTime() - b.time.getTime());
+        return updated.slice(-candlestickDataSize);
+      });
+    }
+
+  }, [currency])
 
   useEffect(() => {
     if (socket) {
