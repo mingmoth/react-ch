@@ -1,5 +1,5 @@
-import { memo, useCallback, useEffect, useState } from "react";
-import { useCryptoWebSocket } from "../../contexts/CryptoWSContext";
+import { memo, useCallback, useState } from "react";
+import useCryptoWSSubscribe from '../../hooks/useCryptoWSSubscribe';
 import { handleCryptoWSCandlestickMsg } from '../../utils/cryptoWSData';
 import {
   candlestickChannel,
@@ -7,32 +7,10 @@ import {
   wsSubscribeMethod,
   wsUnSubscribeMethod,
 } from "../../configs/cryptoWSConfig";
+import { intervals, chartHeight } from '../../configs/chart';
 import CandlestickChart from "../chart/CandlestickChart";
 import ResponsiveContainer from "../common/ResponsiveContainer";
-
-interface CurrencyChartProps {
-  currency: string;
-}
-
-export interface CandleStickResponse {
-  t: Date;
-  o: number;
-  h: number;
-  l: number;
-  c: number;
-  v: number;
-}
-export interface Candlestick {
-  time: Date;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
-const intervals = ["1m", "5m", "15m", "30m", "1h", "4h", "1D"];
-const chartHeight = "400px";
+import type { Candlestick } from "../../types";
 
 function LoadingChart() {
   return (
@@ -42,10 +20,25 @@ function LoadingChart() {
   );
 }
 
+interface CurrencyChartProps {
+  currency: string;
+}
+
 function CurrencyChart({ currency }: CurrencyChartProps) {
-  const { socket } = useCryptoWebSocket();
   const [activeInterval] = useState(intervals[0]);
   const [candlesticks, setCandlesticks] = useState<Candlestick[]>([]);
+
+  // 註冊 candlestick 訊息
+  const subMsg = {
+    method: wsSubscribeMethod,
+    params: { channels: [`${candlestickChannel}.${activeInterval}.${currency}`] },
+  };
+
+  // unsubscribe candlestick
+  const unsubMsg = {
+    method: wsUnSubscribeMethod,
+    params: { channels: [`${candlestickChannel}.${activeInterval}.${currency}`] },
+  };
 
   const handleCandlestickMsg = useCallback((event: MessageEvent) => {
     const candleData = handleCryptoWSCandlestickMsg(event, currency);
@@ -71,39 +64,8 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
 
   }, [currency])
 
-  useEffect(() => {
-    if (socket) {
-      const candleSubMsg = {
-        method: wsSubscribeMethod,
-        params: {
-          channels: [`${candlestickChannel}.${activeInterval}.${currency}`],
-        },
-      };
-      try {
-        socket.send(JSON.stringify(candleSubMsg));
-      } catch (error) {
-        console.error("Failed to send subscription message:", error);
-      }
-      socket.addEventListener("message", handleCandlestickMsg);
-      return () => {
-        socket.removeEventListener("message", handleCandlestickMsg);
-        // unsubscribe candlestick ws
-        const unsubMsg = {
-          method: wsUnSubscribeMethod,
-          params: {
-            channels: [`${candlestickChannel}.${activeInterval}.${currency}`],
-          },
-        }
-        try {
-          if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(unsubMsg));
-          }
-        } catch (err) {
-          console.error("Failed to send unsubscribe message:", err);
-        }
-      };
-    }
-  }, [socket, activeInterval, currency]);
+  // subscribe ws candlestick
+  useCryptoWSSubscribe(subMsg, unsubMsg, handleCandlestickMsg)
 
   return (
     <>

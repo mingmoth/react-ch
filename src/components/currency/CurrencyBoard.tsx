@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { useCryptoWebSocket } from "../../contexts/CryptoWSContext";
+import { useCallback, useState } from "react";
+import useCryptoWSSubscribe from '../../hooks/useCryptoWSSubscribe';
 import { handleCryptoWSOrderBookMsg } from "../../utils/cryptoWSData";
 import {
   bookInstrumentDepth,
@@ -9,22 +9,29 @@ import {
 } from "../../configs/cryptoWSConfig";
 import CurrencyChart from "./CurrencyChart";
 import OrderBook from "../orderbook/OrderBook";
+import type { OrderBookData } from "../../types";
 
 interface CurrencyBoardProps {
   currency: string;
 }
 
-interface OrderBookData {
-  asks: [number, number][];
-  bids: [number, number][];
-}
-
 export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
-  const { socket } = useCryptoWebSocket();
   const [orderBook, setOrderBook] = useState<OrderBookData>({
     asks: [],
     bids: [],
   });
+
+  // 註冊 orderbook 訊息
+  const subMsg = {
+    method: wsSubscribeMethod,
+    params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
+  };
+
+  // unsubscribe orderbook
+  const unsubMsg = {
+    method: wsUnSubscribeMethod,
+    params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
+  };
 
   const handleOrderBookMsg = useCallback((event: MessageEvent) => {
     const msg = handleCryptoWSOrderBookMsg(event, currency);
@@ -32,42 +39,8 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
     setOrderBook(msg);
   }, [currency]);
 
-  useEffect(() => {
-    if (!socket) return;
-    const subMsg = {
-      method: wsSubscribeMethod,
-      params: {
-        channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`],
-      },
-    };
-
-    try {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(subMsg));
-      } else {
-        console.warn("Socket is not open. Current readyState:", socket.readyState);
-      }
-    } catch (err) {
-      console.error("Failed to send subscription message:", err);
-    }
-
-    socket.addEventListener("message", handleOrderBookMsg);
-    return () => {
-      socket.removeEventListener("message", handleOrderBookMsg);
-      // unsubscribe order book ws
-      const unsubMsg = {
-        method: wsUnSubscribeMethod,
-        params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
-      };
-      try {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify(unsubMsg));
-        }
-      } catch (err) {
-        console.error("Failed to send unsubscribe message:", err);
-      }
-    };
-  }, [socket, currency]);
+  // subscribe ws orderbook
+  useCryptoWSSubscribe(subMsg, unsubMsg, handleOrderBookMsg);
 
   return (
     <div className="currency-board">

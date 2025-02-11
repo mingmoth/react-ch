@@ -1,17 +1,11 @@
 import "./OrderBook.css";
 import { orderSize } from "../../configs/cryptoWSConfig";
-
-interface OrderBookData {
-  asks: [number, number][];
-  bids: [number, number][];
-}
+import type { OrderBookData, OrderType } from "../../types";
 
 interface OrderBookProps {
   currency: string;
   data: OrderBookData;
 }
-
-type OrderType = "asks" | "bids";
 
 const orderTypes: OrderType[] = ["asks", "bids"];
 

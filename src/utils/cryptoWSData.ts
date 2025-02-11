@@ -4,24 +4,7 @@ import {
   orderSize,
   wsSubscribeMethod,
 } from "../configs/cryptoWSConfig";
-
-export interface Candlestick {
-  time: Date;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
-export interface CandleStickResponse {
-  t: Date;
-  o: number;
-  h: number;
-  l: number;
-  c: number;
-  v: number;
-}
+import type { CandleStickResponse } from "../types";
 
 export function handleCryptoWSOrderBookMsg(event: MessageEvent, currency: string) {
   try {
