@@ -1,4 +1,3 @@
-// src/components/ResponsiveContainer.tsx
 import { useRef, useState, useEffect, ReactNode, CSSProperties } from "react";
 
 interface ResponsiveContainerProps {
