@@ -133,6 +133,8 @@ export default function CandlestickChart ({ data, width, height }: CandlestickCh
           realTimeColor = "green";
         } else if (latestPrice < prevLatestPriceRef.current) {
           realTimeColor = "red";
+        } else {
+          realTimeColor = 'gray'
         }
       }
       prevLatestPriceRef.current = latestPrice;

@@ -9,6 +9,7 @@ import {
 } from "../../configs/cryptoWSConfig";
 import CurrencyChart from "./CurrencyChart";
 import OrderBook from "../orderbook/OrderBook";
+import CurrencyPrice from "./CurrencyPrice";
 import type { OrderBookData } from "../../types";
 
 interface CurrencyBoardProps {
@@ -44,7 +45,11 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
 
   return (
     <div className="currency-board">
-      <OrderBook currency={currency} data={orderBook} />
+      <div>
+        <h3>{currency}</h3>
+        <CurrencyPrice currency={currency} />
+        <OrderBook data={orderBook} />
+      </div>
       <div className="chart-section">
         <CurrencyChart currency={currency} />
       </div>

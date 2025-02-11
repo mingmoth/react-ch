@@ -3,7 +3,6 @@ import { orderSize } from "../../configs/cryptoWSConfig";
 import type { OrderBookData, OrderType } from "../../types";
 
 interface OrderBookProps {
-  currency: string;
   data: OrderBookData;
 }
 
@@ -37,10 +36,9 @@ const renderRows = (
   ));
 };
 
-export default function OrderBook({ currency, data }: OrderBookProps) {
+export default function OrderBook({ data }: OrderBookProps) {
   return (
     <div className="order-book">
-      <h3>{currency}</h3>
       <div className="order-book-tables">
         <div className="order-side buy-side">
           <h4 className="buy-title">買方 (Bids)</h4>
