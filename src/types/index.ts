@@ -20,5 +20,3 @@ export interface OrderBookData {
   asks: [number, number][];
   bids: [number, number][];
 }
-
-export type OrderType = "asks" | "bids";

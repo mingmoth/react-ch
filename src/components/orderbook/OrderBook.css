@@ -1,6 +1,6 @@
 .order-book {
-  padding: 12px;
-  min-width: 300px;
+  padding: 16px 20px;
+  min-width: 240px;
   background-color: #f9f9f9;
   border-radius: 8px;
 }
@@ -12,35 +12,60 @@
 .order-book-tables {
   display: flex;
   justify-content: space-evenly;
-  gap: 12px;
+  gap: 24px;
 }
 
 .order-side {
-  width: fill;
+  width: -webkit-fill-available;
 }
 
-.order-side table {
-  width: 100%;
-  border-collapse: collapse;
+.order-head {
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.order-side th, .order-side td {
-  padding: 4px;
-  text-align: right;
-  /* border-bottom: 1px solid #ddd; */
+.order-head,
+.order-row {
+  display: flex;
+  justify-content: space-between;
+
 }
-.sell-side th,
-.sell-side td,
-.sell-title {
+
+.order-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sell-side {
   color: red;
-  text-align: center;
-  margin: 0;
 }
 
-.buy-side th,
-.buy-side td,
-.buy-title {
+.buy-side  {
   color: green;
-  text-align: center;
-  margin: 0;
+}
+
+.sell-title,
+.buy-title {
+  margin-top: 0;
+}
+
+@media (min-width: 767px) {
+  .order-book-tables {
+    flex-direction: column-reverse;
+  }
+
+  .order-content.sell-side {
+    flex-direction: column-reverse;
+  }
+
+  .order-head {
+    color: black;
+  }
+
+  .sell-title,
+  .buy-title,
+  .order-head.buy-side {
+    display: none;
+  }
 }
