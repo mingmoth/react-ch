@@ -1,6 +1,6 @@
 import { CryptoWebSocketProvider } from "./contexts/CryptoWSContext";
 import CurrencyBoard from "./components/CurrencyBoard";
-import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
 
 const App = () => {

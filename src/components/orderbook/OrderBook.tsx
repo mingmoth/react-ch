@@ -1,4 +1,4 @@
-import "../styles/OrderBook.css";
+import "./OrderBook.css";
 
 interface OrderBookData {
   asks: [number, number][];
