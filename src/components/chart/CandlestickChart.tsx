@@ -60,7 +60,7 @@ export default function CandlestickChart ({ data, width, height }: CandlestickCh
     // 畫 X 軸：依照資料筆數動態過濾 tick 值
     try {
       const interval = Math.max(1, Math.floor(data.length / 10));
-      const tickValues = xScale.domain().filter((d, i) => i % interval === 0);
+      const tickValues = xScale.domain().filter((_d, i) => i % interval === 0);
       const xAxis = d3
         .axisBottom<Date>(xScale)
         .tickValues(tickValues)
