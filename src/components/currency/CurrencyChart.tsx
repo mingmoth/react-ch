@@ -81,11 +81,15 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
   }
 
   function handleClickInterval(interval: string) {
-    if(!intervals.includes(interval)) return;
+    if(!intervals.includes(interval) || interval === activeInterval) return;
     console.log('切換', interval);
     setCandlesticks([])
     isCandleHistoryFetch.current = false;
     setActiveInterval(interval)
+  }
+
+  function getIntervalClass(interval: string) {
+    return interval === activeInterval ? "currency-interval active" : "currency-interval";
   }
 
   useEffect(() => {
@@ -97,17 +101,17 @@ function CurrencyChart({ currency }: CurrencyChartProps) {
 
   return (
     <>
-      {/* <div className="currency-intervals">
+      <div className="currency-intervals">
         {intervals.map((interval) => (
           <button
             key={interval}
-            className="currency-interval"
+            className={getIntervalClass(interval)}
             onClick={() => handleClickInterval(interval)}
           >
             {interval}
           </button>
         ))}
-      </div> */}
+      </div>
       <div style={{ width: "100%", height: chartHeight }}>
         <ResponsiveContainer resizingFallback={<LoadingChart />}>
           {({ width, height }) => (
