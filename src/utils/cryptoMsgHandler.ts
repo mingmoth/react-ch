@@ -45,11 +45,11 @@ export function handleCryptoWSCandlestickMsg(event: MessageEvent, currency: stri
         if (Array.isArray(candleDataList)) {
           return candleDataList.map((item: CandleStickResponse) => ({
             time: new Date(item.t),
-            open: item.o,
-            high: item.h,
-            low: item.l,
-            close: item.c,
-            volume: item.v,
+            open: Number(item.o),
+            high: Number(item.h),
+            low: Number(item.l),
+            close: Number(item.c),
+            volume: Number(item.v),
           }));
         }
       }

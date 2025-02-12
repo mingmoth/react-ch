@@ -23,11 +23,11 @@ export async function fetchCryptoCandlestickData({
     if(Array.isArray(data) && data.length > 0) {
       return data.map((item) => ({
         time: new Date(item.t),
-        open: item.o,
-        high: item.h,
-        low: item.l,
-        close: item.c,
-        volume: item.v,
+        open: Number(item.o),
+        high: Number(item.h),
+        low: Number(item.l),
+        close: Number(item.c),
+        volume: Number(item.v),
       }));
     }
     return null
