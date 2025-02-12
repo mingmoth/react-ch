@@ -29,18 +29,26 @@ export default function CandlestickChart ({ data, width, height }: CandlestickCh
     innerHeight: number
   ) => {
     try {
+      // 依據資料計算時間範圍
+      const [minTime, maxTime] = d3.extent(data, d => d.time) as [Date, Date];
+      const timeDiff = maxTime.getTime() - minTime.getTime();
+      // 如果時間範圍小於一天，顯示「小時:分鐘」，否則顯示「年月日」
+      const formatStr = timeDiff > 6 * 24 * 60 * 60 * 1000 ? "%Y/%m/%d" : timeDiff > 6 * 60 * 60 * 1000 ? "%m/%d %H" : "%H:%M";
+      const tickFormat = d3.timeFormat(formatStr) as (d: Date) => string;
+    
       const interval = Math.max(1, Math.floor(data.length / 10));
       const tickValues = xScale.domain().filter((_d, i) => i % interval === 0);
       const xAxis = d3
         .axisBottom<Date>(xScale)
         .tickValues(tickValues)
-        .tickFormat(d3.timeFormat("%H:%M") as (d: Date) => string);
+        .tickFormat(tickFormat);
       g.append("g")
         .attr("transform", `translate(0, ${innerHeight})`)
         .call(xAxis);
     } catch (error) {
       console.error("Error drawing X axis:", error);
     }
+    
 
     try {
       const yAxis = d3.axisRight(yScale);
