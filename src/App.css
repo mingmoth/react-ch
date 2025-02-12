@@ -74,6 +74,22 @@
   gap: 20px;
 }
 
+.currency-intervals {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.currency-interval {
+  padding: 6px;
+  font-size: 12px;
+}
+
+.currency-interval.active {
+  background-color: black;
+  color: white;
+}
+
 .chart-section {
   display: flex;
   flex-direction: column;

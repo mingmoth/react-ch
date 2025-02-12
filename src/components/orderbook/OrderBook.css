@@ -3,6 +3,7 @@
   min-width: 240px;
   background-color: #f9f9f9;
   border-radius: 8px;
+  border: 1px solid lightgray;
 }
 
 .order-book h3 {
