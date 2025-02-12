@@ -1,12 +1,8 @@
 import { useCallback, useRef, useState } from "react";
-import useCryptoWSSubscribe from "../../hooks/useCryptoWSSubscribe";
-import { handleCryptoWSCandlestickMsg } from "../../utils/cryptoMsgHandler";
-import {
-  candlestickChannel,
-  wsSubscribeMethod,
-  wsUnSubscribeMethod,
-} from "../../configs/cryptoWSConfig";
-import { intervals } from '../../configs/chart';
+import { useCryptoWSChannelSubscribe } from "../../hooks/useCryptoWSSubscribe";
+import { handleCryptoWSTickerChannelMsg } from "../../utils/cryptoMsgHandler";
+import { tickerChannel } from "../../configs/cryptoWSConfig";
+import type { CandleStickResponse } from "../../types";
 
 interface CurrencyPriceProps {
   currency: string;
@@ -17,29 +13,25 @@ export default function CurrencyPrice({ currency }: CurrencyPriceProps) {
   const prevPrice = useRef(0);
 
   // 註冊 candlestick 訊息
-    const subMsg = {
-      method: wsSubscribeMethod,
-      params: { channels: [`${candlestickChannel}.${intervals[0]}.${currency}`] },
-    };
-  
-    // unsubscribe candlestick
-    const unsubMsg = {
-      method: wsUnSubscribeMethod,
-      params: { channels: [`${candlestickChannel}.${intervals[0]}.${currency}`] },
-    };
-  
-    const handleCandlestickMsg = useCallback((event: MessageEvent) => {
-      const candleData = handleCryptoWSCandlestickMsg(event, currency);
+  const channel = `${tickerChannel}.${currency}`;
+
+  const handleCandlestickMsg = useCallback(
+    (data: CandleStickResponse[]) => {
+      const candleData = handleCryptoWSTickerChannelMsg(data);
       if (!candleData) return;
-      if(candleData.length === 1) {
-        const data = candleData[0]
+      if (candleData.length === 1) {
+        const data = candleData[0];
         // 更新最後一筆 candlestick 資料
-        const { close } = data
+        const { price } = data;
+        if(price === 0 || !price) return;
         setCurrPrice((prev) => {
           prevPrice.current = prev;
-          return close
-        })
-      }}, [currency])
+          return price;
+        });
+      }
+    },
+    [currency]
+  );
 
   const priceColor = () =>
     currPrice > prevPrice.current
@@ -48,7 +40,11 @@ export default function CurrencyPrice({ currency }: CurrencyPriceProps) {
       ? "red"
       : "gray";
 
-  useCryptoWSSubscribe(subMsg, unsubMsg, handleCandlestickMsg);
+  useCryptoWSChannelSubscribe(channel, handleCandlestickMsg);
 
-  return <h3 className="currency-price" style={{ color: priceColor() }}>{currPrice === 0 ? '-' : currPrice}</h3>;
+  return (
+    <h3 className="currency-price" style={{ color: priceColor() }}>
+      {currPrice === 0 ? "-" : currPrice}
+    </h3>
+  );
 }

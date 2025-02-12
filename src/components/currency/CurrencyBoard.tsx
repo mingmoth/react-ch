@@ -1,47 +1,12 @@
-import { useCallback, useState } from "react";
-import useCryptoWSSubscribe from '../../hooks/useCryptoWSSubscribe';
-import { handleCryptoWSOrderBookMsg } from "../../utils/cryptoMsgHandler";
-import {
-  bookInstrumentDepth,
-  orderBookChannel,
-  wsSubscribeMethod,
-  wsUnSubscribeMethod,
-} from "../../configs/cryptoWSConfig";
-import CurrencyChart from "./CurrencyChart";
-import OrderBook from "../orderbook/OrderBook";
+import CurrencyIntervalChart from "./CurrencyIntervalChart";
+import CurrencyOrderBook from "./CurrencyOrderBook";
 import CurrencyPrice from "./CurrencyPrice";
-import type { OrderBookData } from "../../types";
 
 interface CurrencyBoardProps {
   currency: string;
 }
 
 export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
-  const [orderBook, setOrderBook] = useState<OrderBookData>({
-    asks: [],
-    bids: [],
-  });
-
-  // 註冊 orderbook 訊息
-  const subMsg = {
-    method: wsSubscribeMethod,
-    params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
-  };
-
-  // unsubscribe orderbook
-  const unsubMsg = {
-    method: wsUnSubscribeMethod,
-    params: { channels: [`${orderBookChannel}.${currency}.${bookInstrumentDepth}`] },
-  };
-
-  const handleOrderBookMsg = useCallback((event: MessageEvent) => {
-    const msg = handleCryptoWSOrderBookMsg(event, currency);
-    if(!msg) return;
-    setOrderBook(msg);
-  }, [currency]);
-
-  // subscribe ws orderbook
-  useCryptoWSSubscribe(subMsg, unsubMsg, handleOrderBookMsg);
 
   return (
     <div className="currency-board">
@@ -51,9 +16,9 @@ export default function CurrencyBoard({ currency }: CurrencyBoardProps) {
       </div>
       <div className="currency-content">
         <div className="chart-section">
-          <CurrencyChart currency={currency} />
+          <CurrencyIntervalChart currency={currency} />
         </div>
-        <OrderBook data={orderBook} />
+        <CurrencyOrderBook currency={currency} />
       </div>
     </div>
   );

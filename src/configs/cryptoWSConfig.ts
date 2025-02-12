@@ -8,6 +8,7 @@ export const orderBookChannel = "book";
 export const orderSize = 5;
 
 export const tradeChannel = "trade";
+export const tickerChannel = "ticker";
 
 export const wsSubscribeMethod = "subscribe";
 export const wsUnSubscribeMethod = "unsubscribe";
