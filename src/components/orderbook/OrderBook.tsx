@@ -15,8 +15,8 @@ const renderRows = (
 ) => {
   try {
     if (Array.isArray(rows) && rows.length > 0) {
-      return rows.map((row) => (
-        <div className="order-row">
+      return rows.map((row, idx) => (
+        <div key={idx} className="order-row">
           <div>{row[0]}</div>
           <div>{row[1]}</div>
         </div>
@@ -25,8 +25,8 @@ const renderRows = (
   } catch (error) {
     console.error("Error rendering rows:", error);
   }
-  return Array.from({ length: orderSize }, (_, _idx) => (
-    <div className="order-row">
+  return Array.from({ length: orderSize }, (_, idx) => (
+    <div key={idx} className="order-row">
       <div>-</div>
       <div>-</div>
     </div>
