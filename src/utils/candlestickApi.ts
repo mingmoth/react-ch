@@ -1,4 +1,6 @@
-import { candlestickDataSize , candlestickUrl} from '../configs/cryptoWSConfig'
+import { handleCryptoWSCandlestickChannelMsg } from './cryptoMsgHandler';
+import { candlestickDataSize , candlestickUrl } from '../configs/cryptoWSConfig'
+import type { CandleStickResponse } from '../types'
 
 export interface CandlestickParams {
   instrument_name: string
@@ -12,6 +14,8 @@ export async function fetchCryptoCandlestickData({
   count = candlestickDataSize
 }: CandlestickParams) {
   try {
+    // crypto.com get-candlestick api
+    // @see: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#public-get-candlestick
     const response = await fetch(`${candlestickUrl}?instrument_name=${instrument_name}&timeframe=${timeframe}&count=${count}`)
     const candlestickResponse = await response.json()
     if(!candlestickResponse?.result) {
@@ -19,16 +23,9 @@ export async function fetchCryptoCandlestickData({
       throw new Error()
     }
 
-    const { data } = candlestickResponse.result
+    const { data }: { data: CandleStickResponse[] } = candlestickResponse.result
     if(Array.isArray(data) && data.length > 0) {
-      return data.map((item) => ({
-        time: new Date(item.t),
-        open: Number(item.o),
-        high: Number(item.h),
-        low: Number(item.l),
-        close: Number(item.c),
-        volume: Number(item.v),
-      }));
+      return handleCryptoWSCandlestickChannelMsg(data);
     }
     return null
   } catch (error) {
