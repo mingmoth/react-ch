@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { useCryptoWSChannelSubscribe } from "../../hooks/useCryptoWSSubscribe";
 import { handleCryptoWSTickerChannelMsg } from "../../utils/cryptoMsgHandler";
 import { tickerChannel } from "../../configs/cryptoWSConfig";
-import type { CandleStickResponse } from "../../types";
+import type { TickerResponse } from "../../types";
 
 interface CurrencyPriceProps {
   currency: string;
@@ -17,7 +17,7 @@ export default function CurrencyPrice({ currency }: CurrencyPriceProps) {
   const channel = `${tickerChannel}.${currency}`;
 
   const handleCandlestickMsg = useCallback(
-    (data: CandleStickResponse[]) => {
+    (data: TickerResponse[]) => {
       const candleData = handleCryptoWSTickerChannelMsg(data);
       if (!candleData) return;
       if (candleData.length === 1) {

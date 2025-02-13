@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useCryptoWebSocket } from '../contexts/CryptoWSContext';
 import { wsSubscribeMethod, wsUnSubscribeMethod } from "../configs/cryptoWSConfig";
 
-export function useCryptoWSChannelSubscribe(channel: string, handleWSFn: (data: any[]) => void) {
+export function useCryptoWSChannelSubscribe<T>(channel: string, handleWSFn: (data: T[]) => void) {
   if(!channel || typeof handleWSFn !== 'function') {
     console.error("useCryptoWSChannelSubscribe init error")
     return;

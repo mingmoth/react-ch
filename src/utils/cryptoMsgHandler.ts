@@ -1,5 +1,5 @@
 import { orderSize } from "../configs/cryptoWSConfig";
-import type { CandleStickResponse, OrderBookData } from "../types";
+import type { CandleStickResponse, OrderBookData, TickerResponse } from "../types";
 
 
 export function handleCryptoWSBookChannelMsg(data: OrderBookData[]) {
@@ -26,7 +26,7 @@ export function handleCryptoWSCandlestickChannelMsg(data: CandleStickResponse[])
   return null
 }
 
-export function handleCryptoWSTickerChannelMsg(data: any) {
+export function handleCryptoWSTickerChannelMsg(data: TickerResponse[]) {
   if (Array.isArray(data) && data.length > 0) {
     return data.map((tick) => {
       return {

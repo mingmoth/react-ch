@@ -20,3 +20,10 @@ export interface OrderBookData {
   asks: [number, number][];
   bids: [number, number][];
 }
+
+export interface TickerResponse {
+  a: number,
+  h: number,
+  l: number,
+  t: number
+}

@@ -15,7 +15,7 @@ function CurrencyIntervalChart({ currency }: CurrencyIntervalChartProps) {
 
   function handleClickInterval(interval: string) {
     if(!intervals.includes(interval) || interval === activeInterval) return;
-    console.log('切換', interval);
+    console.log(currency, '圖表切換時間區間', interval);
     setActiveInterval(interval)
   }
   return (
