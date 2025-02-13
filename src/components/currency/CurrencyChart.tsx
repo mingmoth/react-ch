@@ -29,6 +29,7 @@ export default function CurrencyChart({
   const isCandleHistoryFetch = useRef(false);
 
   // 註冊 candlestick channel
+  // @see: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#candlestick-time_frame-instrument_name
   const channel = `${candlestickChannel}.${interval}.${currency}`;
 
   const handleCandlestickMsg = useCallback(

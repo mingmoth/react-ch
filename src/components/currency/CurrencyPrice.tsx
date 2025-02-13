@@ -13,6 +13,7 @@ export default function CurrencyPrice({ currency }: CurrencyPriceProps) {
   const prevPrice = useRef(0);
 
   // 註冊 candlestick 訊息
+  // @see: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#ticker-instrument_name
   const channel = `${tickerChannel}.${currency}`;
 
   const handleCandlestickMsg = useCallback(
